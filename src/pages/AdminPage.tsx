@@ -14,34 +14,43 @@ export default function AdminPage({ onBack }: AdminPageProps) {
   const [visitors, setVisitors] = useState<VisitorRecord[]>([]);
   const [selected, setSelected] = useState<VisitorRecord | null>(null);
   const [cleared, setCleared] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
       setAuthed(true);
       setError("");
     } else {
-      setError(" only admin phone and laptop can access this.");
+      setError("❌ Wrong password. Only admin can access this.");
     }
   };
 
   useEffect(() => {
     if (authed) {
-      setVisitors(getAllVisitors());
+      setLoading(true);
+      getAllVisitors()
+        .then(setVisitors)
+        .finally(() => setLoading(false));
     }
   }, [authed]);
 
-  const handleClear = () => {
+  const handleClear = async () => {
     if (confirm("Are you sure? This will delete ALL visitor records.")) {
-      clearAllVisitors();
+      setLoading(true);
+      await clearAllVisitors();
       setVisitors([]);
       setSelected(null);
       setCleared(true);
+      setLoading(false);
     }
   };
 
   const handleRefresh = () => {
-    setVisitors(getAllVisitors());
+    setLoading(true);
     setCleared(false);
+    getAllVisitors()
+      .then(setVisitors)
+      .finally(() => setLoading(false));
   };
 
   if (!authed) {
@@ -50,7 +59,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-red-700 shadow-2xl shadow-red-500/40 mb-4">
-              <span className="text-4xl"></span>
+              <span className="text-4xl">🔐</span>
             </div>
             <h1 className="text-3xl font-black text-white">Admin Access</h1>
             <p className="text-white/40 text-sm mt-1">Restricted – Authorized Personnel Only</p>
@@ -83,9 +92,6 @@ export default function AdminPage({ onBack }: AdminPageProps) {
               ← Back to Site
             </button>
           </div>
-          <p className="text-center text-white/20 text-xs mt-4">
-            Hint: Password is <span className="text-yellow-400/60">kuch bhi</span>
-          </p>
         </div>
       </div>
     );
@@ -163,13 +169,21 @@ export default function AdminPage({ onBack }: AdminPageProps) {
           ))}
         </div>
 
-        {cleared && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 text-red-400 text-sm font-semibold text-center">
-             All visitor records cleared.
+        {/* ─── Loading State ─── */}
+        {loading && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center text-white/40">
+            <p className="text-4xl mb-2 animate-spin inline-block">🔄</p>
+            <p className="font-semibold mt-2">Loading visitor data from Firebase...</p>
           </div>
         )}
 
-        {visitors.length === 0 && !cleared && (
+        {cleared && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 text-red-400 text-sm font-semibold text-center">
+            ✅ All visitor records cleared.
+          </div>
+        )}
+
+        {!loading && visitors.length === 0 && !cleared && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center text-white/40">
             <p className="text-4xl mb-2">🔍</p>
             <p className="font-semibold">No visitor data yet.</p>
@@ -178,7 +192,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
         )}
 
         {/* ─── Visitor Table ─── */}
-        {visitors.length > 0 && (
+        {!loading && visitors.length > 0 && (
           <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden shadow-2xl">
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <h2 className="font-black text-lg">👥 All Visitors</h2>
@@ -202,24 +216,18 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...visitors].reverse().map((v, i) => (
+                  {visitors.map((v, i) => (
                     <tr
                       key={v.id}
                       className="border-b border-white/5 hover:bg-white/5 transition cursor-pointer"
                       onClick={() => setSelected(v)}
                     >
-                      <td className="px-4 py-3 text-white/30 font-mono text-xs">
-                        {visitors.length - i}
-                      </td>
-                      <td className="px-4 py-3 text-white/70 text-xs whitespace-nowrap">
-                        {v.timestamp}
-                      </td>
+                      <td className="px-4 py-3 text-white/30 font-mono text-xs">{i + 1}</td>
+                      <td className="px-4 py-3 text-white/70 text-xs whitespace-nowrap">{v.timestamp}</td>
                       <td className="px-4 py-3 text-xs">{v.deviceType}</td>
                       <td className="px-4 py-3 text-xs text-blue-300">{v.browser}</td>
                       <td className="px-4 py-3 text-xs text-purple-300">{v.os}</td>
-                      <td className="px-4 py-3 text-xs text-green-300 font-mono">
-                        {v.ip || "—"}
-                      </td>
+                      <td className="px-4 py-3 text-xs text-green-300 font-mono">{v.ip || "—"}</td>
                       <td className="px-4 py-3 text-xs text-yellow-300">
                         {v.city && v.country ? `${v.city}, ${v.country}` : "—"}
                       </td>
@@ -285,10 +293,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                       : "—",
                 },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className="bg-white/5 border border-white/5 rounded-xl p-3"
-                >
+                <div key={item.label} className="bg-white/5 border border-white/5 rounded-xl p-3">
                   <p className="text-white/40 text-xs mb-1">{item.label}</p>
                   <p className="text-white font-semibold break-all">{item.value}</p>
                 </div>

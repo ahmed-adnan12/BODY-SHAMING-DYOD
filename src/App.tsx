@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import HeroPage from "./pages/HeroPage";
 import AdminPage from "./pages/AdminPage";
-import { trackVisitor } from "./utils/tracker";
+import { initTracker } from "./utils/tracker";
 
 export function App() {
   const [page, setPage] = useState<"hero" | "admin">("hero");
 
   useEffect(() => {
-    // Track visitor on first load
-    trackVisitor();
+    // Track every visitor and save to Firebase
+    initTracker();
   }, []);
 
   if (page === "admin") {
