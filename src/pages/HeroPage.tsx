@@ -40,10 +40,6 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
   const [storyText, setStoryText] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  // Snapchat tag state
-  const [snapUsername, setSnapUsername] = useState("");
-  const [snapSubmitted, setSnapSubmitted] = useState(false);
-
   useEffect(() => {
     const t = setTimeout(() => setVideoVisible(true), 1500);
     return () => clearTimeout(t);
@@ -55,14 +51,6 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
     setTimeout(() => {
       window.open("https://www.snapchat.com", "_blank");
     }, 1500);
-  };
-
-  const handleSnapTag = () => {
-    if (!snapUsername.trim()) return;
-    logAction(`📸 Snapchat Tag: @${snapUsername.trim()}`);
-    setSnapSubmitted(true);
-    setSnapUsername("");
-    setTimeout(() => setSnapSubmitted(false), 3000);
   };
 
   const handleSubmitStory = () => {
@@ -125,7 +113,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
       </button>
       {showAdminHint && (
         <div className="absolute top-16 right-4 z-50 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-lg shadow-lg animate-bounce">
-          {5 - adminClickCount} more taps for Admin
+          {5 - adminClickCount} more taps for Admin 
         </div>
       )}
 
@@ -144,8 +132,10 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
           <span className="text-white">Awareness</span>
         </h1>
         <p className="text-lg sm:text-xl text-white/70 max-w-xl mx-auto">
-          A campaign by <span className="text-yellow-300 font-bold">Body-Shaming-Group</span>
-          {" "}because every body deserves respect.. & who is perfect?
+          A campaign by <span className="text-yellow-300 font-bold">Body-Shaming-Group</span> 
+            because every body deserves
+          respect..  
+           & who is perfect?
         </p>
         <div className="mt-4 flex justify-center gap-3 flex-wrap">
           <span className="text-xs bg-pink-500/20 text-pink-300 border border-pink-500/40 rounded-full px-3 py-1">
@@ -167,7 +157,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
         <section className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl">
           <div className="flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-8">
             <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg shadow-yellow-500/40">
-              <span className="text-5xl">👻</span>
+              <span className="text-5xl"></span>
             </div>
             <div className="flex-1 text-center sm:text-left">
               <span className="text-xs uppercase tracking-widest font-semibold text-yellow-400">
@@ -176,58 +166,22 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
               <h2 className="text-2xl sm:text-3xl font-black mt-1 mb-2">Open Snapchat Filter</h2>
               <p className="text-white/60 text-sm sm:text-base mb-4">
                 Use our exclusive Body Shaming Awareness Snapchat filter! Show your support and
-                spread the message with a snap.
+                spread the message with a snap. 
               </p>
               <button
                 onClick={handleSnapchat}
                 className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-yellow-400/30 text-sm sm:text-base"
               >
-                <span>👻</span> Open Snapchat Now
+                <span></span> Open Snapchat Now
               </button>
             </div>
           </div>
-
-          {/* ── Tag Us on Snapchat ── */}
-          <div className="mx-6 mb-6 bg-yellow-400/10 border border-yellow-400/20 rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">📸</span>
-              <div>
-                <p className="text-yellow-300 font-black text-sm">Get Featured on our Campaign Wall!</p>
-                <p className="text-white/40 text-xs">Tag us on Snapchat and we'll feature your snap in our campaign 🌟</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-400 font-bold text-sm">@</span>
-                <input
-                  type="text"
-                  value={snapUsername}
-                  onChange={(e) => setSnapUsername(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSnapTag()}
-                  placeholder="your snapchat username"
-                  className="w-full bg-white/5 border border-yellow-400/20 rounded-xl pl-7 pr-4 py-2.5 text-white placeholder-white/20 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                />
-              </div>
-              <button
-                onClick={handleSnapTag}
-                disabled={!snapUsername.trim()}
-                className="bg-yellow-400 hover:bg-yellow-300 disabled:opacity-40 disabled:cursor-not-allowed text-black font-bold px-4 py-2.5 rounded-xl transition-all transform hover:scale-105 active:scale-95 text-sm whitespace-nowrap"
-              >
-                🌟 Tag Us
-              </button>
-            </div>
-            {snapSubmitted && (
-              <p className="text-green-400 text-xs font-bold mt-2 animate-pulse">
-                ✅ You're on the list! We'll feature your snap soon 🎉
-              </p>
-            )}
-          </div>
-
           <div className="h-1 w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-transparent" />
         </section>
 
-        {/* ── Card 2: SHARE YOUR STORY ── */}
+        {/* ── Card 2: SHARE YOUR STORY – Always Visible Public Wall ── */}
         <section className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl">
+          {/* Header */}
           <div className="flex items-center gap-4 p-6 sm:p-8 pb-4">
             <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-lg shadow-pink-500/40">
               <span className="text-4xl">💬</span>
@@ -239,6 +193,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
             </div>
           </div>
 
+          {/* Input Form */}
           <div className="px-6 sm:px-8 pb-6 space-y-3">
             <input
               type="text"
@@ -260,7 +215,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
                 disabled={!storyText.trim()}
                 className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-pink-500/30 text-sm"
               >
-                💌 Post My Story
+                 Post My Story
               </button>
               {submitted && (
                 <span className="text-green-400 text-sm font-bold animate-pulse">✅ Posted!</span>
@@ -273,7 +228,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
           {/* Public Story Wall */}
           <div className="px-6 sm:px-8 py-5">
             <h3 className="text-sm font-black uppercase tracking-widest text-pink-300 mb-4 flex items-center gap-2">
-              <span>🌸</span> Community Stories Wall
+              <span></span> Community Stories Wall
               <span className="ml-auto text-xs font-normal text-white/30 normal-case tracking-normal">
                 {stories.length} {stories.length === 1 ? "story" : "stories"} shared
               </span>
@@ -281,11 +236,11 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
 
             {stories.length === 0 ? (
               <div className="text-center py-8 text-white/25">
-                <p className="text-3xl mb-2">💭</p>
+                <p className="text-3xl mb-2"></p>
                 <p className="text-sm">No stories yet. Be the first to share yours!</p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
+              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1 scrollbar-thin">
                 {stories.map((s) => (
                   <div
                     key={s.id}
@@ -316,11 +271,12 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
             <h2 className="text-2xl sm:text-3xl font-black mt-1 mb-2">Watch & Reflect</h2>
             <p className="text-white/60 text-sm sm:text-base mb-5">
               Watch this powerful video on body shaming and understand why words can hurt. Let's
-              spread awareness together.
+              spread awareness together. 
             </p>
             <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 aspect-video">
               <iframe
                 className="w-full h-full"
+                // src="https://youtu.be/E8umFV69fNg?si=6HW5vak8iMrFGext"
                 src="https://www.youtube.com/embed/E8umFV69fNg?si=sLYy4DykX6Z2t_VZ"
                 title="Body Shaming Awareness Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -335,8 +291,10 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
 
       {/* ─── FOOTER ─── */}
       <footer className="relative z-10 text-center pb-8 text-white/30 text-xs">
-        Made with 💙 by DYOD Sem 1
+        Made   by DYOD Sem 1
       </footer>
+
+      {/* Modal removed – story wall is now always visible inline */}
     </div>
   );
 }
