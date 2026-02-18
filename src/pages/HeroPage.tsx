@@ -1,54 +1,73 @@
 import { useEffect, useState } from "react";
 import { logAction } from "../utils/tracker";
 
+interface Story {
+  id: string;
+  name: string;
+  text: string;
+  time: string;
+}
+
+const STORIES_KEY = "dyod_stories";
+
+function getStories(): Story[] {
+  try {
+    const raw = localStorage.getItem(STORIES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStory(story: Story) {
+  const stories = getStories();
+  stories.unshift(story);
+  localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+}
+
 interface HeroPageProps {
   onAdminClick: () => void;
 }
 
 export default function HeroPage({ onAdminClick }: HeroPageProps) {
   const [videoVisible, setVideoVisible] = useState(false);
-  const [storyOpen, setStoryOpen] = useState(false);
   const [adminClickCount, setAdminClickCount] = useState(0);
   const [showAdminHint, setShowAdminHint] = useState(false);
 
+  // Story Wall state
+  const [stories, setStories] = useState<Story[]>(getStories());
+  const [storyName, setStoryName] = useState("");
+  const [storyText, setStoryText] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
   useEffect(() => {
-    // Reveal video after 1.5 seconds for dramatic effect
     const t = setTimeout(() => setVideoVisible(true), 1500);
     return () => clearTimeout(t);
   }, []);
 
   const handleSnapchat = () => {
     logAction("Clicked Open Snapchat Filter");
-    // Deep link to Snapchat
     window.location.href = "snapchat://";
     setTimeout(() => {
       window.open("https://www.snapchat.com", "_blank");
     }, 1500);
   };
 
-  const handleShare = () => {
-    logAction("Clicked Share Your Story");
-    setStoryOpen(true);
-  };
-
-  const handleShareClose = () => setStoryOpen(false);
-
-  const handleNativeShare = async () => {
-    logAction("Used Native Share");
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Body Shaming Awareness – DYoD",
-          text: "Join the movement against body shaming! Check this out 👇",
-          url: window.location.href,
-        });
-      } catch {
-        // user cancelled
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard! Share it with everyone 💛");
-    }
+  const handleSubmitStory = () => {
+    if (!storyText.trim()) return;
+    logAction("Submitted a Story");
+    const newStory: Story = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: storyName.trim() || "Anonymous 🌸",
+      text: storyText.trim(),
+      time: new Date().toLocaleString(),
+    };
+    saveStory(newStory);
+    setStories(getStories());
+    setStoryText("");
+    setStoryName("");
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 3000);
   };
 
   // Secret admin — tap logo 5 times
@@ -94,7 +113,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
       </button>
       {showAdminHint && (
         <div className="absolute top-16 right-4 z-50 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-lg shadow-lg animate-bounce">
-          {5 - adminClickCount} more taps for Admin 
+          {5 - adminClickCount} more taps for Admin 🔐
         </div>
       )}
 
@@ -113,8 +132,8 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
           <span className="text-white">Awareness</span>
         </h1>
         <p className="text-lg sm:text-xl text-white/70 max-w-xl mx-auto">
-          A campaign by <span className="text-yellow-300 font-bold"></span> &amp;{" "}
-          <span className="text-pink-300 font-bold">Body-Shamiing group</span> — because every body deserves
+          A campaign by <span className="text-yellow-300 font-bold">Adnan</span> &amp;{" "}
+          <span className="text-pink-300 font-bold">Muzamil</span> — because every body deserves
           respect. 💛
         </p>
         <div className="mt-4 flex justify-center gap-3 flex-wrap">
@@ -137,7 +156,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
         <section className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl">
           <div className="flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-8">
             <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-yellow-300 to-yellow-500 shadow-lg shadow-yellow-500/40">
-              <span className="text-5xl"></span>
+              <span className="text-5xl">👻</span>
             </div>
             <div className="flex-1 text-center sm:text-left">
               <span className="text-xs uppercase tracking-widest font-semibold text-yellow-400">
@@ -146,43 +165,96 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
               <h2 className="text-2xl sm:text-3xl font-black mt-1 mb-2">Open Snapchat Filter</h2>
               <p className="text-white/60 text-sm sm:text-base mb-4">
                 Use our exclusive Body Shaming Awareness Snapchat filter! Show your support and
-                spread the message with a snap. 
+                spread the message with a snap. 📸
               </p>
               <button
                 onClick={handleSnapchat}
                 className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-yellow-400/30 text-sm sm:text-base"
               >
-                <span></span> Open Snapchat Now
+                <span>👻</span> Open Snapchat Now
               </button>
             </div>
           </div>
           <div className="h-1 w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-transparent" />
         </section>
 
-        {/* ── Card 2: SHARE YOUR STORY ── */}
+        {/* ── Card 2: SHARE YOUR STORY – Always Visible Public Wall ── */}
         <section className="rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm shadow-2xl">
-          <div className="flex flex-col sm:flex-row-reverse items-center gap-6 p-6 sm:p-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-lg shadow-pink-500/40">
-              <span className="text-5xl"></span>
+          {/* Header */}
+          <div className="flex items-center gap-4 p-6 sm:p-8 pb-4">
+            <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-lg shadow-pink-500/40">
+              <span className="text-4xl">💬</span>
             </div>
-            <div className="flex-1 text-center sm:text-left">
-              <span className="text-xs uppercase tracking-widest font-semibold text-pink-400">
-                Step 2
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black mt-1 mb-2">Share Your Story</h2>
-              <p className="text-white/60 text-sm sm:text-base mb-4">
-                Your voice matters. Share your experience with body shaming and inspire others to
-                speak up. Together we are stronger. 
-              </p>
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-pink-500/30 text-sm sm:text-base"
-              >
-                <span>💬</span> Share Your Story
-              </button>
+            <div>
+              <span className="text-xs uppercase tracking-widest font-semibold text-pink-400">Step 2</span>
+              <h2 className="text-2xl sm:text-3xl font-black mt-0.5">Share Your Story</h2>
+              <p className="text-white/50 text-sm">Your words appear for everyone. You are not alone. 🌸</p>
             </div>
           </div>
+
+          {/* Input Form */}
+          <div className="px-6 sm:px-8 pb-6 space-y-3">
+            <input
+              type="text"
+              value={storyName}
+              onChange={(e) => setStoryName(e.target.value)}
+              placeholder="Your name (optional — leave blank for Anonymous)"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/25 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+            <textarea
+              value={storyText}
+              onChange={(e) => { setStoryText(e.target.value); logAction("Typing a Story"); }}
+              placeholder="Write your story here… share what you felt, what happened, or a message of support 💛"
+              rows={4}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-white placeholder-white/25 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+            />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSubmitStory}
+                disabled={!storyText.trim()}
+                className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-pink-500/30 text-sm"
+              >
+                🌸 Post My Story
+              </button>
+              {submitted && (
+                <span className="text-green-400 text-sm font-bold animate-pulse">✅ Posted!</span>
+              )}
+            </div>
+          </div>
+
           <div className="h-1 w-full bg-gradient-to-r from-pink-500 via-rose-400 to-transparent" />
+
+          {/* Public Story Wall */}
+          <div className="px-6 sm:px-8 py-5">
+            <h3 className="text-sm font-black uppercase tracking-widest text-pink-300 mb-4 flex items-center gap-2">
+              <span>📖</span> Community Stories Wall
+              <span className="ml-auto text-xs font-normal text-white/30 normal-case tracking-normal">
+                {stories.length} {stories.length === 1 ? "story" : "stories"} shared
+              </span>
+            </h3>
+
+            {stories.length === 0 ? (
+              <div className="text-center py-8 text-white/25">
+                <p className="text-3xl mb-2">🕊️</p>
+                <p className="text-sm">No stories yet. Be the first to share yours!</p>
+              </div>
+            ) : (
+              <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1 scrollbar-thin">
+                {stories.map((s) => (
+                  <div
+                    key={s.id}
+                    className="bg-white/5 border border-white/10 rounded-2xl p-4 hover:bg-white/8 transition"
+                  >
+                    <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                      <span className="text-pink-300 font-bold text-sm">{s.name}</span>
+                      <span className="text-white/25 text-xs">{s.time}</span>
+                    </div>
+                    <p className="text-white/75 text-sm leading-relaxed">{s.text}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* ── Card 3: VIDEO ── */}
@@ -198,7 +270,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
             <h2 className="text-2xl sm:text-3xl font-black mt-1 mb-2">Watch & Reflect</h2>
             <p className="text-white/60 text-sm sm:text-base mb-5">
               Watch this powerful video on body shaming and understand why words can hurt. Let's
-              spread awareness together. 
+              spread awareness together. 🎥
             </p>
             <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 aspect-video">
               <iframe
@@ -220,48 +292,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
         Made with 💛 by Adnan &amp; Muzamil · DYoD Sem 1
       </footer>
 
-      {/* ─── SHARE STORY MODAL ─── */}
-      {storyOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-[#1a1a2e] to-[#16213e] border border-white/10 rounded-3xl shadow-2xl w-full max-w-lg p-6 sm:p-8">
-            <h3 className="text-2xl font-black text-white mb-1">Your Story Matters 💛</h3>
-            <p className="text-white/50 text-sm mb-5">
-              Share anonymously or with your name. Your words could change someone's life.
-            </p>
-            <textarea
-              className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder-white/30 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-pink-500 h-36"
-              placeholder="Write your story here... (e.g., 'I was told I was too fat to wear...')"
-              onChange={() => logAction("Typing in Share Story box")}
-            />
-            <div className="flex gap-3 mt-4 flex-wrap">
-              <button
-                onClick={() => {
-                  logAction("Submitted Story");
-                  alert(
-                    "Thank you for sharing! Your story has been saved. Together we fight body shaming! 💛"
-                  );
-                  handleShareClose();
-                }}
-                className="flex-1 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 text-white font-bold py-3 px-4 rounded-full transition text-sm"
-              >
-                Submit Story 
-              </button>
-              <button
-                onClick={handleNativeShare}
-                className="flex-1 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-4 rounded-full transition text-sm border border-white/10"
-              >
-                Share Page 
-              </button>
-              <button
-                onClick={handleShareClose}
-                className="w-full sm:w-auto bg-white/5 hover:bg-white/10 text-white/50 font-bold py-3 px-4 rounded-full transition text-sm border border-white/10"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal removed – story wall is now always visible inline */}
     </div>
   );
 }
