@@ -20,7 +20,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
       setAuthed(true);
       setError("");
     } else {
-      setError("❌ Wrong password. Try again.");
+      setError(" only admin phone and laptop can access this.");
     }
   };
 
@@ -50,7 +50,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-red-500 to-red-700 shadow-2xl shadow-red-500/40 mb-4">
-              <span className="text-4xl">🔐</span>
+              <span className="text-4xl"></span>
             </div>
             <h1 className="text-3xl font-black text-white">Admin Access</h1>
             <p className="text-white/40 text-sm mt-1">Restricted – Authorized Personnel Only</p>
