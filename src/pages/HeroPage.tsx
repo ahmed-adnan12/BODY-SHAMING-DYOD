@@ -58,7 +58,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
     logAction("Submitted a Story");
     const newStory: Story = {
       id: Math.random().toString(36).substr(2, 9),
-      name: storyName.trim() || "Anonymous 🌸",
+      name: storyName.trim() || "Anonymous ",
       text: storyText.trim(),
       time: new Date().toLocaleString(),
     };
@@ -276,7 +276,6 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
             <div className="rounded-2xl overflow-hidden shadow-xl border border-white/10 aspect-video">
               <iframe
                 className="w-full h-full"
-                // src="https://youtu.be/E8umFV69fNg?si=6HW5vak8iMrFGext"
                 src="https://www.youtube.com/embed/E8umFV69fNg?si=sLYy4DykX6Z2t_VZ"
                 title="Body Shaming Awareness Video"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -291,7 +290,7 @@ export default function HeroPage({ onAdminClick }: HeroPageProps) {
 
       {/* ─── FOOTER ─── */}
       <footer className="relative z-10 text-center pb-8 text-white/30 text-xs">
-        Made   by DYOD Sem 1
+        Made   by DYOD Sem 1   2025
       </footer>
 
       {/* Modal removed – story wall is now always visible inline */}
