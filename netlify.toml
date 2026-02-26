@@ -1,3 +1,11 @@
+[build]
+  command = "npm ci --include=dev && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_CONFIG_PRODUCTION = "false"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
