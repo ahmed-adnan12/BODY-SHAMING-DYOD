@@ -1,41 +1,12 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 :root {
-  font-family: "Space Grotesk", sans-serif;
+  --dyod-bg-start: #0f0c29;
+  --dyod-bg-middle: #302b63;
+  --dyod-bg-end: #24243e;
 }
 
-h1,
-h2,
-h3 {
-  font-family: "Sora", sans-serif;
-}
-
-.particle {
-  position: absolute;
-  bottom: -20px;
-  border-radius: 9999px;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 185, 244, 0.3));
-  opacity: 0.35;
-  animation-name: float-particle;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-.glass-card {
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background: linear-gradient(165deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04));
-  box-shadow: 0 30px 45px rgba(4, 2, 16, 0.32);
-  backdrop-filter: blur(14px);
-}
-
-@keyframes float-particle {
-  from {
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    transform: translateY(-120vh) scale(1.2);
-  }
+body {
+  font-family: "Sora", "Trebuchet MS", sans-serif;
 }
